@@ -21,7 +21,7 @@ services:
       IS_VERBOSE_ENABLED: ${IS_VERBOSE_ENABLED}
       IS_SSL_ENABLED: ${IS_SSL_ENABLED}
     ports:
-      - "3000:3000"
+      - "3001:3000"
     volumes:
       - .:/app
     depends_on:
