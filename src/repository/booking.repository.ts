@@ -4,25 +4,25 @@ import { eq } from "drizzle-orm/sql/expressions/conditions";
 import { booking } from "../schema/booking";
 
 export async function findBookings(userId: number|null, showtimeId: number|null, startDate: Date|null, endDate: Date|null) {
-    let findBookingsQuery = 'SELECT booking.id, booking."qrCode", showtime."startTime", showtime."endTime", hall."number", seat."row", seat."number" FROM booking' +
-        " INNER JOIN bookingSeat ON bookingSeat.bookingId = booking.id" +
-        " INNER JOIN seat ON bookingSeat.seatId = seat.id" +
-        " INNER JOIN showtime ON booking.showtimeId = showtime.id" +
-        " INNER JOIN hall ON showtimes.hallId = hall.id";
+    let findBookingsQuery = 'SELECT "booking"."id", "booking"."qrCode", "showtime"."startTime", "showtime"."endTime", "hall"."number", "seat"."row", "seat"."number" FROM "booking"' +
+        ' INNER JOIN "bookingSeat" ON "bookingSeat"."bookingId" = "booking"."id"' +
+        ' INNER JOIN "seat" ON "bookingSeat"."seatId" = "seat"."id"' +
+        ' INNER JOIN "showtime" ON "booking"."showtimeId" = "showtime"."id"' +
+        ' INNER JOIN "hall" ON "showtime"."hallId" = "hall"."id"';
 
     if (userId !== null) {
-        findBookingsQuery += ` WHERE booking.userId = ${userId}`;
+        findBookingsQuery += ` WHERE "booking"."userId" = ${userId}`;
     }
 
     if (showtimeId !== null) {
-        findBookingsQuery += ` WHERE booking.showtimeId = ${showtimeId}`;
+        findBookingsQuery += ` WHERE "booking"."showtimeId" = ${showtimeId}`;
     }
 
     if (startDate !== null && endDate != null) {
-        findBookingsQuery += ` WHERE showtime.startTime >= ${startDate} AND showtime.endTime <= ${endDate}`;
+        findBookingsQuery += ` WHERE "showtime"."startTime" >= ${startDate} AND "showtime"."endTime" <= ${endDate}`;
     }
 
-    findBookingsQuery += " ORDER BY booking.id ASC";
+    findBookingsQuery += ' ORDER BY "booking"."id" ASC;';
 
     try {
         let result = await database.execute(findBookingsQuery);
