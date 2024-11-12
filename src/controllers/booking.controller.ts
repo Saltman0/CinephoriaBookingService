@@ -48,7 +48,7 @@ export async function createBooking(req: Request, res: Response) {
             parseInt(req.body.showtimeId)
         );
 
-        res.status(200).json(bookingToCreate);
+        res.status(201).json(bookingToCreate);
     } catch (error) {
         if (error instanceof Error) {
             res.status(500).json({ message: error.message });
