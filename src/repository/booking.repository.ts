@@ -59,7 +59,7 @@ export async function findBookingById(id: number) {
 export async function insertBooking(qrCode: string, userId: number, showtimeId: number) {
     const preparedInsertBooking = database
         .insert(booking)
-        .values(bookingFactory.createFactory(qrCode, userId, showtimeId))
+        .values(bookingFactory.createBooking(qrCode, userId, showtimeId))
         .prepare("insertBooking");
 
     try {
