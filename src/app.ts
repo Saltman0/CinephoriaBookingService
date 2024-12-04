@@ -3,7 +3,7 @@ import cors from "cors";
 import pino from "pino";
 import bookingRoutes from "./routes/booking.routes";
 
-export const port: number = 3000;
+export const port: number = parseInt(process.env.PORT as string) || 3000;
 
 export const app: Express = express();
 
