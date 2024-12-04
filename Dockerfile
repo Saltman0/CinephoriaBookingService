@@ -40,4 +40,4 @@ COPY --chown=node:node ./src/ .
 EXPOSE 3000
 
 # Run the application with the entrypoint.
-CMD ["pnpm", "run", "prod"]
+CMD ["npx", "tsx", "server.ts"]
