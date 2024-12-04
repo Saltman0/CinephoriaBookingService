@@ -40,4 +40,4 @@ COPY --chown=node:node ./src/ .
 EXPOSE 3000
 
 # Run the application with the entrypoint.
-CMD ["node", "server.js"]
+CMD ["npx", "tsx", "watch", "server.js"]
