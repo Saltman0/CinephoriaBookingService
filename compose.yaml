@@ -24,7 +24,7 @@ services:
     networks:
       - cinephoria_booking_network
     ports:
-      - "3002:3000"
+      - "3001:3000"
     volumes:
       - .:/app
     depends_on:
@@ -42,7 +42,7 @@ services:
     networks:
       - cinephoria_booking_network
     ports:
-      - "5434:5432"
+      - "5433:5432"
     restart: unless-stopped
     volumes:
       - postgres_booking_data:/var/lib/postgresql/data
@@ -53,8 +53,8 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.21.0.0/16
-          gateway: 172.21.0.1
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
 
 volumes:
   postgres_booking_data:
