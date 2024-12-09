@@ -36,8 +36,5 @@ USER node
 # Copy the rest of the source files into the image.
 COPY --chown=node:node ./src/ .
 
-# Indicate expected port
-EXPOSE 3000
-
 # Run the application with the entrypoint.
 CMD ["npx", "tsx", "watch", "server.ts"]
