@@ -42,9 +42,7 @@ export async function findBookingById(id: number) {
         const result = await database
             .select()
             .from(booking)
-            .where(eq(booking.id, id))
-            .prepare("findBookingById")
-            .execute();
+            .where(eq(booking.id, id));
 
         if (result.length === 0) {
             return null;

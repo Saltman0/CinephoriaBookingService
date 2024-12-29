@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as bookingRepository from "../repository/booking.repository";
+import * as amqp from "amqplib/callback_api";
 
 export async function getBookings(req: Request, res: Response) {
     try {
@@ -27,6 +28,66 @@ export async function getBookingById(req: Request, res: Response) {
         const booking = await bookingRepository.findBookingById(
             parseInt(req.params.id)
         );
+
+        console.log("test0");
+
+        amqp.connect('amqp://guest:guest@172.18.0.7:5672', function(error0, connection) {
+            console.log("test");
+            if (error0) {
+                throw error0;
+            }
+            connection.createChannel(function(error1, channel) {
+                if (error1) {
+                    throw error1;
+                }
+                let queue: string = 'hello';
+                let msg: string = 'Hello world';
+
+                channel.assertQueue(queue, {
+                    durable: true
+                });
+
+                channel.sendToQueue(queue, Buffer.from(msg), {
+                    persistent: true
+                });
+                console.log(" [x] Sent %s", msg);
+            });
+
+            setTimeout(function() {
+                connection.close();
+                process.exit(0);
+            }, 500);
+        });
+
+        /*amqp.connect('amqp://default_user_-NkjeqsWJAWu6Z_EuHh:ZXRj3lOUQiOzvQAbZOza-mpnHyIIra8r@10.96.79.151', function(error0, connection) {
+            if (error0) {
+                throw error0;
+            }
+            connection.createChannel(function(error1, channel) {
+                if (error1) {
+                    throw error1;
+                }
+                let queue = 'hello';
+
+                channel.assertQueue(queue, {
+                    durable: true
+                });
+
+                console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
+                channel.consume(queue, function(msg) {
+                    // @ts-ignore
+                    console.log(" [x] Received %s", msg.content.toString());
+                    setTimeout(function() {
+                        console.log(" [x] Done");
+                        if (msg) {
+                            channel.ack(msg);
+                        }
+                    }, 1000);
+                }, {
+                    noAck: false
+                });
+            });
+        });*/
 
         if (booking !== null) {
             res.status(200).json(booking);
