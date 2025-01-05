@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import * as bookingRepository from "../repository/booking.repository";
-import * as amqp from "amqplib/callback_api";
+import { publishMessage } from "../rabbitmq";
 
 export async function getBookings(req: Request, res: Response) {
     try {
@@ -14,7 +14,7 @@ export async function getBookings(req: Request, res: Response) {
         if (bookings !== null) {
             res.status(200).json(bookings);
         } else {
-            res.status(404).json({error : `Bookings not found.`});
+            res.status(404).json({ message : `Bookings not found.` });
         }
     } catch (error) {
         if (error instanceof Error) {
@@ -29,70 +29,10 @@ export async function getBookingById(req: Request, res: Response) {
             parseInt(req.params.id)
         );
 
-        console.log("test0");
-
-        amqp.connect('amqp://guest:guest@172.18.0.7:5672', function(error0, connection) {
-            console.log("test");
-            if (error0) {
-                throw error0;
-            }
-            connection.createChannel(function(error1, channel) {
-                if (error1) {
-                    throw error1;
-                }
-                let queue: string = 'hello';
-                let msg: string = 'Hello world';
-
-                channel.assertQueue(queue, {
-                    durable: true
-                });
-
-                channel.sendToQueue(queue, Buffer.from(msg), {
-                    persistent: true
-                });
-                console.log(" [x] Sent %s", msg);
-            });
-
-            setTimeout(function() {
-                connection.close();
-                process.exit(0);
-            }, 500);
-        });
-
-        /*amqp.connect('amqp://default_user_-NkjeqsWJAWu6Z_EuHh:ZXRj3lOUQiOzvQAbZOza-mpnHyIIra8r@10.96.79.151', function(error0, connection) {
-            if (error0) {
-                throw error0;
-            }
-            connection.createChannel(function(error1, channel) {
-                if (error1) {
-                    throw error1;
-                }
-                let queue = 'hello';
-
-                channel.assertQueue(queue, {
-                    durable: true
-                });
-
-                console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
-                channel.consume(queue, function(msg) {
-                    // @ts-ignore
-                    console.log(" [x] Received %s", msg.content.toString());
-                    setTimeout(function() {
-                        console.log(" [x] Done");
-                        if (msg) {
-                            channel.ack(msg);
-                        }
-                    }, 1000);
-                }, {
-                    noAck: false
-                });
-            });
-        });*/
-
         if (booking !== null) {
             res.status(200).json(booking);
         } else {
-            res.status(404).json({error : `Booking ${req.params.id} not found.`});
+            res.status(404).json({ message : `Booking ${req.params.id} not found.` });
         }
     } catch (error) {
         if (error instanceof Error) {
@@ -108,6 +48,8 @@ export async function createBooking(req: Request, res: Response) {
             parseInt(req.body.userId),
             parseInt(req.body.showtimeId)
         );
+
+        await publishMessage("booking", JSON.stringify({ type: "booking", event: "create", booking: bookingToCreate}));
 
         res.status(201).json(bookingToCreate);
     } catch (error) {
@@ -126,6 +68,8 @@ export async function updateBooking(req: Request, res: Response) {
             parseInt(req.body.showtimeId)
         );
 
+        await publishMessage("booking", JSON.stringify({ type: "booking", event: "update", booking: bookingToUpdate}));
+
         res.status(200).json(bookingToUpdate);
     } catch (error) {
         if (error instanceof Error) {
@@ -140,7 +84,9 @@ export async function deleteBooking(req: Request, res: Response) {
             parseInt(req.params.id)
         );
 
-        res.status(200).json(bookingToDelete);
+        await publishMessage("booking", JSON.stringify({ type: "booking", event: "delete", booking: bookingToDelete }));
+
+        res.status(200).json({ message: "Booking deleted successfully." });
     } catch (error) {
         if (error instanceof Error) {
             res.status(500).json({ message: error.message });
