@@ -3,7 +3,8 @@ import { database } from "../config/database";
 import { showtime } from "../schema/showtime";
 import { eq } from "drizzle-orm/sql/expressions/conditions";
 
-export async function insertShowtime(id: number, startTime: Date, endTime: Date, price: number, movieId: number, hallId: number) {
+export async function insertShowtime(id: number, startTime: Date, endTime: Date, price: number, movieId: number,
+                                     hallId: number) {
     try {
         const prepareInsertShowtime = await database
             .insert(showtime)
@@ -16,7 +17,8 @@ export async function insertShowtime(id: number, startTime: Date, endTime: Date,
     }
 }
 
-export async function updateShowtime(id: number, startTime: Date|null, endTime: Date|null, price: number|null, movieId: number|null, hallId: number|null) {
+export async function updateShowtime(id: number, startTime: Date|null, endTime: Date|null, price: number|null,
+                                     movieId: number|null, hallId: number|null) {
     try {
         const preparedUpdateShowtime = await database
             .update(showtime)
