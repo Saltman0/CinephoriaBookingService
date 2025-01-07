@@ -1,5 +1,7 @@
 import EventEmitter from "node:events";
 import * as movieEvents from "./movie.events";
+import * as showtimeEvents from "./showtime.events";
+import * as userEvents from "./user.events";
 
 export const eventEmitter: EventEmitter = new EventEmitter();
 
@@ -8,7 +10,13 @@ eventEmitter.on("messageReceived", async (message: { type: string, event: string
         const actions: { [key: string]: (message: any) => Promise<void> } = {
             "createMovie": movieEvents.createMovieEvent,
             "updateMovie": movieEvents.updateMovieEvent,
-            "deleteMovie": movieEvents.deleteMovieEvent
+            "deleteMovie": movieEvents.deleteMovieEvent,
+            "createShowtime": showtimeEvents.createShowtimeEvent,
+            "updateShowtime": showtimeEvents.updateShowtimeEvent,
+            "deleteShowtime": showtimeEvents.deleteShowtimeEvent,
+            "createUser": userEvents.createUserEvent,
+            "updateUser": userEvents.updateUserEvent,
+            "deleteUser": userEvents.deleteUserEvent
         };
 
         const key: string = `${message.event}${message.type.charAt(0).toUpperCase() + message.type.slice(1)}`;
