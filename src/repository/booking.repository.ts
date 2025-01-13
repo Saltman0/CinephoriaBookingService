@@ -42,59 +42,57 @@ export async function findBookingById(id: number) {
         const result = await database
             .select()
             .from(booking)
-            .where(eq(booking.id, id))
-            .prepare("findBookingById")
-            .execute();
+            .where(eq(booking.id, id));
 
         if (result.length === 0) {
             return null;
         }
 
-        return result;
+        return result[0];
     } catch (error) {
         throw error;
     }
 }
 
 export async function insertBooking(qrCode: string, userId: number, showtimeId: number) {
-    const preparedInsertBooking = database
-        .insert(booking)
-        .values(bookingFactory.createBooking(qrCode, userId, showtimeId))
-        .prepare("insertBooking");
-
     try {
-        await preparedInsertBooking.execute();
+        const preparedInsertBooking = await database
+            .insert(booking)
+            .values(bookingFactory.createBooking(qrCode, userId, showtimeId))
+            .returning();
+
+        return preparedInsertBooking[0];
     } catch (error) {
         throw error;
     }
 }
 
 export async function updateBooking(id: number, qrCode: string|null, userId: number|null, showtimeId: number|null) {
-    const preparedUpdateBooking = database
-        .update(booking)
-        .set({
-            qrCode: qrCode ?? undefined,
-            userId: userId ?? undefined,
-            showtimeId: showtimeId ?? undefined
-        })
-        .where(eq(booking.id, id))
-        .prepare("updateBooking");
-
     try {
-        await preparedUpdateBooking.execute();
+        const preparedUpdateBooking = await database
+            .update(booking)
+            .set({
+                qrCode: qrCode ?? undefined,
+                userId: userId ?? undefined,
+                showtimeId: showtimeId ?? undefined
+            })
+            .where(eq(booking.id, id))
+            .returning();
+
+        return preparedUpdateBooking[0];
     } catch (error) {
         throw error;
     }
 }
 
 export async function deleteBooking(id: number) {
-    const preparedDeleteBooking = database
-        .delete(booking)
-        .where(eq(booking.id, id))
-        .prepare("deleteBooking");
-
     try {
-        await preparedDeleteBooking.execute();
+        const preparedDeleteBooking = await database
+            .delete(booking)
+            .where(eq(booking.id, id))
+            .returning({ id: booking.id });
+
+        return preparedDeleteBooking[0];
     } catch (error) {
         throw error;
     }

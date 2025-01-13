@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as bookingRepository from "../repository/booking.repository";
+import { publishMessage } from "../rabbitmq";
 
 export async function getBookings(req: Request, res: Response) {
     try {
@@ -13,7 +14,7 @@ export async function getBookings(req: Request, res: Response) {
         if (bookings !== null) {
             res.status(200).json(bookings);
         } else {
-            res.status(404).json({error : `Bookings not found.`});
+            res.status(404).json({ message : `Bookings not found.` });
         }
     } catch (error) {
         if (error instanceof Error) {
@@ -31,7 +32,7 @@ export async function getBookingById(req: Request, res: Response) {
         if (booking !== null) {
             res.status(200).json(booking);
         } else {
-            res.status(404).json({error : `Booking ${req.params.id} not found.`});
+            res.status(404).json({ message : `Booking ${req.params.id} not found.` });
         }
     } catch (error) {
         if (error instanceof Error) {
@@ -47,6 +48,8 @@ export async function createBooking(req: Request, res: Response) {
             parseInt(req.body.userId),
             parseInt(req.body.showtimeId)
         );
+
+        await publishMessage("booking", JSON.stringify({ type: "booking", event: "create", booking: bookingToCreate}));
 
         res.status(201).json(bookingToCreate);
     } catch (error) {
@@ -65,6 +68,8 @@ export async function updateBooking(req: Request, res: Response) {
             parseInt(req.body.showtimeId)
         );
 
+        await publishMessage("booking", JSON.stringify({ type: "booking", event: "update", booking: bookingToUpdate}));
+
         res.status(200).json(bookingToUpdate);
     } catch (error) {
         if (error instanceof Error) {
@@ -79,7 +84,9 @@ export async function deleteBooking(req: Request, res: Response) {
             parseInt(req.params.id)
         );
 
-        res.status(200).json(bookingToDelete);
+        await publishMessage("booking", JSON.stringify({ type: "booking", event: "delete", booking: bookingToDelete }));
+
+        res.status(200).json({ message: "Booking deleted successfully." });
     } catch (error) {
         if (error instanceof Error) {
             res.status(500).json({ message: error.message });
