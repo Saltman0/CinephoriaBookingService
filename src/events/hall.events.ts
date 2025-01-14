@@ -1,6 +1,6 @@
 import * as hallRepository from "../repository/hall.repository";
 
-export async function createHallEvent(hall: { id: number, number: number, projectionQuality: string|null, cinemaId: number }): Promise<void> {
+export async function createHallEvent(hall: { id: number, number: number, projectionQuality: string, cinemaId: number }): Promise<void> {
     await hallRepository.insertHall(
         hall.id, hall.number, hall.projectionQuality, hall.cinemaId
     );
