@@ -4,14 +4,30 @@ import { eq } from "drizzle-orm/sql/expressions/conditions";
 import { booking } from "../schema/booking";
 
 export async function findBookings(userId: number|null) {
-    let findBookingsQuery = 'SELECT * FROM "booking"';
+    let findBookingsQuery = 'SELECT * FROM booking';
     if (userId !== null) {
-        findBookingsQuery += ` WHERE "booking"."userId" = ${userId}`;
+        findBookingsQuery += ` WHERE booking."userId" = ${userId}`;
     }
-    findBookingsQuery += ' ORDER BY "booking"."id" ASC';
+    findBookingsQuery += ' ORDER BY booking."id" ASC';
 
     try {
         let result = await database.execute(findBookingsQuery);
+
+        return result.rows;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function findBookingSeats(bookingId: number|null) {
+    let findBookingSeatsQuery = 'SELECT * FROM "bookingSeat"';
+    if (bookingId !== null) {
+        findBookingSeatsQuery += ` WHERE "bookingSeat"."bookingId" = ${bookingId}`;
+    }
+    findBookingSeatsQuery += ' ORDER BY "bookingSeat"."id" ASC';
+
+    try {
+        let result = await database.execute(findBookingSeatsQuery);
 
         return result.rows;
     } catch (error) {
