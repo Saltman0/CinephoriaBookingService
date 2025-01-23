@@ -19,7 +19,7 @@ export async function getBookings(req: Request, res: Response) {
 export async function getBookingSeats(req: Request, res: Response) {
     try {
         const bookingSeats = await bookingRepository.findBookingSeats(
-            parseInt(req.params.id)
+            parseInt(req.params.bookingId)
         );
 
         res.status(200).json(bookingSeats);

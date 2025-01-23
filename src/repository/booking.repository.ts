@@ -2,6 +2,8 @@ import * as bookingFactory from "../factory/booking.factory";
 import { database } from "../config/database";
 import { eq } from "drizzle-orm/sql/expressions/conditions";
 import { booking } from "../schema/booking";
+import { bookingSeat } from "../schema/bookingSeat";
+import { asc } from "drizzle-orm/sql/expressions/select";
 
 export async function findBookings(userId: number|null) {
     let findBookingsQuery = 'SELECT * FROM booking';
@@ -19,17 +21,13 @@ export async function findBookings(userId: number|null) {
     }
 }
 
-export async function findBookingSeats(bookingId: number|null) {
-    let findBookingSeatsQuery = 'SELECT * FROM "bookingSeat"';
-    if (bookingId !== null) {
-        findBookingSeatsQuery += ` WHERE "bookingSeat"."bookingId" = ${bookingId}`;
-    }
-    findBookingSeatsQuery += ' ORDER BY "bookingSeat"."id" ASC';
-
+export async function findBookingSeats(bookingId: number) {
     try {
-        let result = await database.execute(findBookingSeatsQuery);
-
-        return result.rows;
+        return await database
+            .select()
+            .from(bookingSeat)
+            .where(eq(bookingSeat.bookingId, bookingId))
+            .orderBy(asc(bookingSeat.id));
     } catch (error) {
         throw error;
     }
