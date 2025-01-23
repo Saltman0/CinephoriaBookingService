@@ -2,9 +2,9 @@ import { Request, Response } from "express";
 import * as bookingRepository from "../repository/booking.repository";
 import { publishMessage } from "../rabbitmq";
 
-export async function getBookings(req: Request, res: Response) {
+export async function getBookingsByUser(req: Request, res: Response) {
     try {
-        const bookings = await bookingRepository.findBookings(
+        const bookings = await bookingRepository.findBookingsByUser(
             parseInt(req.params.userId)
         );
 

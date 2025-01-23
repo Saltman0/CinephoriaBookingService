@@ -5,17 +5,13 @@ import { booking } from "../schema/booking";
 import { bookingSeat } from "../schema/bookingSeat";
 import { asc } from "drizzle-orm/sql/expressions/select";
 
-export async function findBookings(userId: number|null) {
-    let findBookingsQuery = 'SELECT * FROM booking';
-    if (userId !== null) {
-        findBookingsQuery += ` WHERE booking."userId" = ${userId}`;
-    }
-    findBookingsQuery += ' ORDER BY booking."id" ASC';
-
+export async function findBookingsByUser(userId: number) {
     try {
-        let result = await database.execute(findBookingsQuery);
-
-        return result.rows;
+        return await database
+            .select()
+            .from(booking)
+            .where(eq(booking.userId, userId))
+            .orderBy(asc(bookingSeat.id));
     } catch (error) {
         throw error;
     }
