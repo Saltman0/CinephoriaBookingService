@@ -5,17 +5,10 @@ import { publishMessage } from "../rabbitmq";
 export async function getBookings(req: Request, res: Response) {
     try {
         const bookings = await bookingRepository.findBookings(
-            req.params.userId ? parseInt(req.params.userId) : null,
-            req.params.showtimeId ? parseInt(req.params.showtimeId) : null,
-            req.params.startDate ? new Date(req.params.startDate) : null,
-            req.params.endDate ? new Date(req.params.endDate) : null
+            parseInt(req.params.userId)
         );
 
-        if (bookings !== null) {
-            res.status(200).json(bookings);
-        } else {
-            res.status(404).json({ message : `Bookings not found.` });
-        }
+        res.status(200).json(bookings);
     } catch (error) {
         if (error instanceof Error) {
             res.status(500).json({ message: error.message });
