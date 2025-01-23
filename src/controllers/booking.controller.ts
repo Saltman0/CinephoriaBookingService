@@ -16,6 +16,20 @@ export async function getBookings(req: Request, res: Response) {
     }
 }
 
+export async function getBookingSeats(req: Request, res: Response) {
+    try {
+        const bookingSeats = await bookingRepository.findBookingSeats(
+            parseInt(req.params.id)
+        );
+
+        res.status(200).json(bookingSeats);
+    } catch (error) {
+        if (error instanceof Error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+}
+
 export async function getBookingById(req: Request, res: Response) {
     try {
         const booking = await bookingRepository.findBookingById(
