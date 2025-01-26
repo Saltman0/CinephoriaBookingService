@@ -11,7 +11,7 @@ export async function findBookingsByUser(userId: number) {
             .select()
             .from(booking)
             .where(eq(booking.userId, userId))
-            .orderBy(asc(bookingSeat.id));
+            .orderBy(asc(booking.id));
     } catch (error) {
         throw error;
     }
