@@ -3,7 +3,6 @@ import cors from "cors";
 import pino from "pino";
 import bookingRoutes from "./routes/booking.routes";
 import passport from "./middleware/passport";
-import { subscribeToMessages } from "./rabbitmq";
 
 export const port: number = parseInt(process.env.PORT as string) || 3000;
 
@@ -23,9 +22,3 @@ app.use(express.json());
 app.use(passport.initialize());
 
 app.use(bookingRoutes);
-
-await subscribeToMessages("movie");
-await subscribeToMessages("showtime");
-await subscribeToMessages("user");
-await subscribeToMessages("cinema");
-await subscribeToMessages("hall");
