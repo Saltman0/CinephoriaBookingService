@@ -50,7 +50,6 @@ export async function getBookingById(req: Request, res: Response) {
 export async function createBooking(req: Request, res: Response) {
     try {
         const bookingToCreate = await bookingRepository.insertBooking(
-            req.body.qrCode,
             parseInt(req.body.userId),
             parseInt(req.body.showtimeId)
         );
@@ -67,7 +66,6 @@ export async function updateBooking(req: Request, res: Response) {
     try {
         const bookingToUpdate = await bookingRepository.updateBooking(
             parseInt(req.params.bookingId),
-            req.body.qrCode,
             parseInt(req.body.userId),
             parseInt(req.body.showtimeId)
         );

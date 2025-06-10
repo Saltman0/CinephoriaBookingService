@@ -46,11 +46,11 @@ export async function findBookingById(id: number) {
     }
 }
 
-export async function insertBooking(qrCode: string, userId: number, showtimeId: number) {
+export async function insertBooking(userId: number, showtimeId: number) {
     try {
         const preparedInsertBooking = await database
             .insert(booking)
-            .values(bookingFactory.createBooking(qrCode, userId, showtimeId))
+            .values(bookingFactory.createBooking(userId, showtimeId))
             .returning();
 
         return preparedInsertBooking[0];
@@ -59,12 +59,11 @@ export async function insertBooking(qrCode: string, userId: number, showtimeId: 
     }
 }
 
-export async function updateBooking(id: number, qrCode: string|null, userId: number|null, showtimeId: number|null) {
+export async function updateBooking(id: number, userId: number|null, showtimeId: number|null) {
     try {
         const preparedUpdateBooking = await database
             .update(booking)
             .set({
-                qrCode: qrCode ?? undefined,
                 userId: userId ?? undefined,
                 showtimeId: showtimeId ?? undefined
             })

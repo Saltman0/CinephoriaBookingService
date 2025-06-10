@@ -8,7 +8,6 @@ DROP TABLE IF EXISTS "booking";
 CREATE TABLE IF NOT EXISTS "booking"
 (
     "id" SERIAL PRIMARY KEY,
-    "qrCode" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
     "showtimeId" INTEGER NOT NULL
 );
