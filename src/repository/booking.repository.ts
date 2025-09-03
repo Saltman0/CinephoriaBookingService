@@ -4,14 +4,23 @@ import { eq } from "drizzle-orm/sql/expressions/conditions";
 import { booking } from "../schema/booking";
 import { bookingSeat } from "../schema/bookingSeat";
 import { asc } from "drizzle-orm/sql/expressions/select";
+import { sql } from "drizzle-orm";
 
-export async function findBookingsByUser(userId: number) {
+export async function findBookings(userId: number|null, showtimeId: number|null) {
     try {
-        return await database
-            .select()
-            .from(booking)
-            .where(eq(booking.userId, userId))
-            .orderBy(asc(booking.id));
+        let request: string = 'SELECT * FROM "booking"';
+
+        let whereCondition: string = "WHERE";
+
+        if (userId !== null) {
+            request += ` ${whereCondition} "booking"."userId" = ${userId}`;
+            whereCondition = "AND";
+        }
+        if (showtimeId !== null) {
+            request += ` ${whereCondition} "booking"."showtimeId" = ${showtimeId}`;
+        }
+
+        return await database.execute(sql.raw(request));
     } catch (error) {
         throw error;
     }

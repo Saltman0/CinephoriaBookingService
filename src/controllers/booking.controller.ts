@@ -1,13 +1,17 @@
 import { Request, Response } from "express";
 import * as bookingRepository from "../repository/booking.repository";
 
-export async function getBookingsByUser(req: Request, res: Response) {
+export async function getBookings(req: Request, res: Response) {
     try {
-        const bookings = await bookingRepository.findBookingsByUser(
-            parseInt(req.params.userId)
+        let userId: string|null = <string>req.query.userId ?? null;
+        let showtimeId: string|null = <string>req.query.showtimeId ?? null;
+
+        const bookings = await bookingRepository.findBookings(
+            userId !== null ? parseInt(userId) : null,
+            showtimeId !== null ? parseInt(showtimeId) : null
         );
 
-        res.status(200).json(bookings);
+        res.status(200).json(bookings.rows);
     } catch (error) {
         if (error instanceof Error) {
             res.status(500).json({ message: error.message });
