@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as bookingRepository from "../repository/booking.repository";
+import * as bookingSeatRepository from "../repository/bookingSeat.repository";
 
 export async function getBookings(req: Request, res: Response) {
     try {
@@ -58,7 +59,9 @@ export async function createBooking(req: Request, res: Response) {
             parseInt(req.body.showtimeId)
         );
 
-        res.status(201).json(bookingToCreate);
+        await bookingSeatRepository.insertBookingSeat(bookingToCreate.id, req.body.seats);
+
+        res.status(201).json(bookingToCreate.id);
     } catch (error) {
         if (error instanceof Error) {
             res.status(500).json({ message: error.message });
