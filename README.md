@@ -21,12 +21,12 @@ Lancez la commande suivante pour générer les librairies nécessaires au bon fo
 ### Variables d'environnement
 
 Vous aurez besoin de générer un fichier `.env.local` avec des différentes variables d'environnement pour mettre en 
-marche Cinéphoria Booking service.
+marche le microservice **Cinéphoria Booking**.
 Un fichier `.env` est disponible dans le projet.
 
 ## Déploiement en local
 
-Lancez la commande suivante pour lancer le microservice Cinéphoria Booking Service :
+Lancez la commande suivante pour lancer le microservice **Cinéphoria Booking** :
 
 ```bash
 docker compose up -d --build
