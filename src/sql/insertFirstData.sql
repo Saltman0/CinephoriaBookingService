@@ -1,45 +1,52 @@
 -- Start the SQL transaction
 BEGIN;
 
--- Insert booking
-INSERT INTO "booking" ("userId", "showtimeId")
-VALUES (1, 1),
-       (2, 1),
-       (3, 1),
-       (4, 1),
-       (5, 1),
-       (1, 2),
-       (2, 2),
-       (3, 2),
-       (4, 2),
-       (5, 2);
--- Insert booking
+    -- Bookings
+    INSERT INTO "booking" ("userId", "showtimeId")
+    VALUES (1,1),
+           (2,2),
+           (3,3),
+           (4,4),
+           (5,5),
+           (6,6),
+           (7,7),
+           (8,8),
+           (9,9),
+           (10,10),
+           (1,11),
+           (2,12),
+           (3,13),
+           (4,14),
+           (5,15)
+    ;
+    -- Bookings
 
-SAVEPOINT booking_savepoint;
-
--- Insert bookingSeat
-INSERT INTO "bookingSeat" ("bookingId", "seatId")
-VALUES (1, 1),
-       (1, 2),
-       (2, 7),
-       (2, 8),
-       (2, 9),
-       (3, 16),
-       (4, 17),
-       (4, 18),
-       (4, 19),
-       (5, 20),
-       (6, 23),
-       (6, 24),
-       (7, 26),
-       (7, 27),
-       (8, 31),
-       (9, 35),
-       (9, 36),
-       (10, 40);
--- Insert bookingSeat
-
-SAVEPOINT bookingSeat_savepoint;
+    -- Booking seats
+    INSERT INTO "bookingSeat" ("bookingId", "seatId")
+    VALUES (1,1),
+           (1,2),
+           (2,11),
+           (3,23),
+           (3,24),
+           (4,33),
+           (5,45),
+           (5,46),
+           (6,51),
+           (6,52),
+           (7,7),
+           (8,19),
+           (9,29),
+           (9,30),
+           (10,41),
+           (11,6),
+           (12,15),
+           (13,25),
+           (14,35),
+           (15,55)
+    ;
 
 -- Commit if successful
 COMMIT;
+
+-- If something fails instead
+ROLLBACK;
