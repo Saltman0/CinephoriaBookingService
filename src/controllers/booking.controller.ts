@@ -1,21 +1,32 @@
 import { Request, Response } from "express";
 import * as bookingRepository from "../repository/booking.repository";
-import { publishMessage } from "../rabbitmq";
+import * as bookingSeatRepository from "../repository/bookingSeat.repository";
 
 export async function getBookings(req: Request, res: Response) {
     try {
+        let userId: string|null = <string>req.query.userId ?? null;
+        let showtimeId: string|null = <string>req.query.showtimeId ?? null;
+
         const bookings = await bookingRepository.findBookings(
-            req.params.userId ? parseInt(req.params.userId) : null,
-            req.params.showtimeId ? parseInt(req.params.showtimeId) : null,
-            req.params.startDate ? new Date(req.params.startDate) : null,
-            req.params.endDate ? new Date(req.params.endDate) : null
+            userId !== null ? parseInt(userId) : null,
+            showtimeId !== null ? parseInt(showtimeId) : null
         );
 
-        if (bookings !== null) {
-            res.status(200).json(bookings);
-        } else {
-            res.status(404).json({ message : `Bookings not found.` });
+        res.status(200).json(bookings.rows);
+    } catch (error) {
+        if (error instanceof Error) {
+            res.status(500).json({ message: error.message });
         }
+    }
+}
+
+export async function getBookingSeats(req: Request, res: Response) {
+    try {
+        const bookingSeats = await bookingRepository.findBookingSeats(
+            parseInt(req.params.bookingId)
+        );
+
+        res.status(200).json(bookingSeats);
     } catch (error) {
         if (error instanceof Error) {
             res.status(500).json({ message: error.message });
@@ -26,7 +37,7 @@ export async function getBookings(req: Request, res: Response) {
 export async function getBookingById(req: Request, res: Response) {
     try {
         const booking = await bookingRepository.findBookingById(
-            parseInt(req.params.id)
+            parseInt(req.params.bookingId)
         );
 
         if (booking !== null) {
@@ -44,14 +55,13 @@ export async function getBookingById(req: Request, res: Response) {
 export async function createBooking(req: Request, res: Response) {
     try {
         const bookingToCreate = await bookingRepository.insertBooking(
-            req.body.qrCode,
             parseInt(req.body.userId),
             parseInt(req.body.showtimeId)
         );
 
-        await publishMessage("booking", JSON.stringify({ type: "booking", event: "create", booking: bookingToCreate}));
+        await bookingSeatRepository.insertBookingSeat(bookingToCreate.id, req.body.seats);
 
-        res.status(201).json(bookingToCreate);
+        res.status(201).json(bookingToCreate.id);
     } catch (error) {
         if (error instanceof Error) {
             res.status(500).json({ message: error.message });
@@ -62,13 +72,10 @@ export async function createBooking(req: Request, res: Response) {
 export async function updateBooking(req: Request, res: Response) {
     try {
         const bookingToUpdate = await bookingRepository.updateBooking(
-            parseInt(req.params.id),
-            req.body.qrCode,
+            parseInt(req.params.bookingId),
             parseInt(req.body.userId),
             parseInt(req.body.showtimeId)
         );
-
-        await publishMessage("booking", JSON.stringify({ type: "booking", event: "update", booking: bookingToUpdate}));
 
         res.status(200).json(bookingToUpdate);
     } catch (error) {
@@ -80,11 +87,7 @@ export async function updateBooking(req: Request, res: Response) {
 
 export async function deleteBooking(req: Request, res: Response) {
     try {
-        const bookingToDelete = await bookingRepository.deleteBooking(
-            parseInt(req.params.id)
-        );
-
-        await publishMessage("booking", JSON.stringify({ type: "booking", event: "delete", booking: bookingToDelete }));
+        await bookingRepository.deleteBooking(parseInt(req.params.bookingId));
 
         res.status(200).json({ message: "Booking deleted successfully." });
     } catch (error) {

@@ -2,36 +2,37 @@ import * as bookingFactory from "../factory/booking.factory";
 import { database } from "../config/database";
 import { eq } from "drizzle-orm/sql/expressions/conditions";
 import { booking } from "../schema/booking";
+import { bookingSeat } from "../schema/bookingSeat";
+import { asc } from "drizzle-orm/sql/expressions/select";
+import { sql } from "drizzle-orm";
 
-export async function findBookings(userId: number|null, showtimeId: number|null, startDate: Date|null, endDate: Date|null) {
-    let findBookingsQuery = 'SELECT "booking"."id", "booking"."qrCode", "showtime"."startTime", "showtime"."endTime", "hall"."number", "seat"."row", "seat"."number" FROM "booking"' +
-        ' INNER JOIN "bookingSeat" ON "bookingSeat"."bookingId" = "booking"."id"' +
-        ' INNER JOIN "seat" ON "bookingSeat"."seatId" = "seat"."id"' +
-        ' INNER JOIN "showtime" ON "booking"."showtimeId" = "showtime"."id"' +
-        ' INNER JOIN "hall" ON "showtime"."hallId" = "hall"."id"';
-
-    if (userId !== null) {
-        findBookingsQuery += ` WHERE "booking"."userId" = ${userId}`;
-    }
-
-    if (showtimeId !== null) {
-        findBookingsQuery += ` WHERE "booking"."showtimeId" = ${showtimeId}`;
-    }
-
-    if (startDate !== null && endDate != null) {
-        findBookingsQuery += ` WHERE "showtime"."startTime" >= ${startDate} AND "showtime"."endTime" <= ${endDate}`;
-    }
-
-    findBookingsQuery += ' ORDER BY "booking"."id" ASC;';
-
+export async function findBookings(userId: number|null, showtimeId: number|null) {
     try {
-        let result = await database.execute(findBookingsQuery);
+        let request: string = 'SELECT * FROM "booking"';
 
-        if (result.rows.length === 0) {
-            return null;
+        let whereCondition: string = "WHERE";
+
+        if (userId !== null) {
+            request += ` ${whereCondition} "booking"."userId" = ${userId}`;
+            whereCondition = "AND";
+        }
+        if (showtimeId !== null) {
+            request += ` ${whereCondition} "booking"."showtimeId" = ${showtimeId}`;
         }
 
-        return result.rows;
+        return await database.execute(sql.raw(request));
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function findBookingSeats(bookingId: number) {
+    try {
+        return await database
+            .select()
+            .from(bookingSeat)
+            .where(eq(bookingSeat.bookingId, bookingId))
+            .orderBy(asc(bookingSeat.id));
     } catch (error) {
         throw error;
     }
@@ -54,11 +55,11 @@ export async function findBookingById(id: number) {
     }
 }
 
-export async function insertBooking(qrCode: string, userId: number, showtimeId: number) {
+export async function insertBooking(userId: number, showtimeId: number) {
     try {
         const preparedInsertBooking = await database
             .insert(booking)
-            .values(bookingFactory.createBooking(qrCode, userId, showtimeId))
+            .values(bookingFactory.createBooking(userId, showtimeId))
             .returning();
 
         return preparedInsertBooking[0];
@@ -67,12 +68,11 @@ export async function insertBooking(qrCode: string, userId: number, showtimeId: 
     }
 }
 
-export async function updateBooking(id: number, qrCode: string|null, userId: number|null, showtimeId: number|null) {
+export async function updateBooking(id: number, userId: number|null, showtimeId: number|null) {
     try {
         const preparedUpdateBooking = await database
             .update(booking)
             .set({
-                qrCode: qrCode ?? undefined,
                 userId: userId ?? undefined,
                 showtimeId: showtimeId ?? undefined
             })
