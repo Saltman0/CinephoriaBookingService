@@ -6,7 +6,7 @@ on:
       image:
         description: "Docker image name"
         required: true
-        default: saltman0/cinephoria-graphql
+        default: saltman0/cinephoria-booking
         type: string
       tag:
         description: "Docker image tag"
