@@ -30,7 +30,7 @@ jobs:
 
       - name: Update Deployment.yaml with new image
         run: |
-          cd CinephoriaK8S/GraphQL
+          cd CinephoriaK8S/BookingService
           yq -i '.spec.template.spec.containers[0].image = "${{ inputs.image }}:${{ inputs.tag }}"' Deployment.yaml
 
       - name: Commit and push changes
@@ -38,6 +38,6 @@ jobs:
           cd CinephoriaK8S
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add GraphQL/Deployment.yaml
-          git commit -m "Update GraphQL image to ${{ inputs.image }}:${{ inputs.tag }}"
+          git add BookingService/Deployment.yaml
+          git commit -m "Update Booking image to ${{ inputs.image }}:${{ inputs.tag }}"
           git push origin master
