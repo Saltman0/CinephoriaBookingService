@@ -8,7 +8,7 @@
     "build": "pnpm install",
     "prod": "npx tsx src/server.ts",
     "dev": "npx tsx watch src/server.ts",
-    "test:watch": "vitest run --watch",
+    "test": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
   "keywords": [],
