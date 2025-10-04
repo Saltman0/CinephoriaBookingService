@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { createBookingSeat } from '../src/factory/bookingSeat.factory';
+import { createBookingSeat } from '../../src/factory/bookingSeat.factory';
 
 describe('createBookingSeat', () => {
 
