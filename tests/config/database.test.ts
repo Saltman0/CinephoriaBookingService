@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import {describe, it, expect, vi, beforeEach} from 'vitest';
 
 vi.mock('drizzle-orm/node-postgres', () => ({
-    drizzle: vi.fn(() => 'MOCK_DB_INSTANCE'),
+    drizzle: vi.fn((): string => 'MOCK_DB_INSTANCE'),
 }));
 
 describe('Database URL', () => {
@@ -13,7 +13,6 @@ describe('Database URL', () => {
     });
 
     it('should call drizzle with POSTGRES_URL', async () => {
-        // Re-import after setting env and mocks to ensure fresh state
         const { database } = await import('../../src/config/database');
         const { drizzle } = await import('drizzle-orm/node-postgres');
 
