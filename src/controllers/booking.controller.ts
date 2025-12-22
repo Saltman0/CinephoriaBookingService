@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as bookingRepository from "../repository/booking.repository";
 import * as bookingSeatRepository from "../repository/bookingSeat.repository";
+import { publishMessage } from "../rabbitmq";
 
 export async function getBookings(req: Request, res: Response) {
     try {
@@ -61,6 +62,8 @@ export async function createBooking(req: Request, res: Response) {
 
         await bookingSeatRepository.insertBookingSeat(bookingToCreate.id, req.body.seats);
 
+        await publishMessage("booking", JSON.stringify({ type: "booking", event: "create", booking: bookingToCreate}));
+
         res.status(201).json(bookingToCreate.id);
     } catch (error) {
         if (error instanceof Error) {
@@ -77,6 +80,8 @@ export async function updateBooking(req: Request, res: Response) {
             parseInt(req.body.showtimeId)
         );
 
+        await publishMessage("booking", JSON.stringify({ type: "booking", event: "update", booking: bookingToUpdate}));
+
         res.status(200).json(bookingToUpdate);
     } catch (error) {
         if (error instanceof Error) {
@@ -87,7 +92,9 @@ export async function updateBooking(req: Request, res: Response) {
 
 export async function deleteBooking(req: Request, res: Response) {
     try {
-        await bookingRepository.deleteBooking(parseInt(req.params.bookingId));
+        const bookingToDelete = await bookingRepository.deleteBooking(parseInt(req.params.bookingId));
+
+        await publishMessage("booking", JSON.stringify({ type: "booking", event: "delete", booking: bookingToDelete }));
 
         res.status(200).json({ message: "Booking deleted successfully." });
     } catch (error) {
