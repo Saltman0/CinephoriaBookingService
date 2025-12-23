@@ -17,3 +17,14 @@ export async function insertBookingSeat(bookingId: number, seatIds: number[]) {
         throw error;
     }
 }
+
+export async function deleteBookingSeatBySeatId(seatId: number) {
+    try {
+        return await database
+            .delete(bookingSeat)
+            .where(eq(bookingSeat.seatId, seatId))
+            .returning({id: bookingSeat.id});
+    } catch (error) {
+        throw error;
+    }
+}
