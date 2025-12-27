@@ -5,7 +5,7 @@ const URL: string = "amqp://"+process.env.RABBITMQ_USER+":"+process.env.RABBITMQ
 
 export async function publishMessage(exchange: string, message: string) {
     try {
-        const connection: amqp.Connection = await amqp.connect(URL);
+        const connection: amqp.ChannelModel = await amqp.connect(URL);
         const channel: amqp.Channel = await connection.createChannel();
 
         await channel.assertExchange(exchange, "fanout", { durable: false });
@@ -23,7 +23,7 @@ export async function publishMessage(exchange: string, message: string) {
 
 export async function subscribeToMessages(exchange: string) {
     try {
-        const connection: amqp.Connection = await amqp.connect(URL);
+        const connection: amqp.ChannelModel = await amqp.connect(URL);
         const channel: amqp.Channel = await connection.createChannel();
 
         await channel.assertExchange(exchange, "fanout", { durable: false });
