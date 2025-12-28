@@ -62,7 +62,16 @@ export async function createBooking(req: Request, res: Response) {
 
         await bookingSeatRepository.insertBookingSeat(bookingToCreate.id, req.body.seats);
 
-        await publishMessage("booking", JSON.stringify({ type: "booking", event: "create", booking: bookingToCreate}));
+        await publishMessage(
+            "bookingHistory",
+            JSON.stringify(
+                {
+                    type: "bookingHistory",
+                    event: "create",
+                    body: {bookingId: bookingToCreate.id, date: new Date()}
+                }
+            )
+        );
 
         res.status(201).json(bookingToCreate.id);
     } catch (error) {
@@ -80,8 +89,6 @@ export async function updateBooking(req: Request, res: Response) {
             parseInt(req.body.showtimeId)
         );
 
-        await publishMessage("booking", JSON.stringify({ type: "booking", event: "update", booking: bookingToUpdate}));
-
         res.status(200).json(bookingToUpdate);
     } catch (error) {
         if (error instanceof Error) {
@@ -94,7 +101,16 @@ export async function deleteBooking(req: Request, res: Response) {
     try {
         const bookingToDelete = await bookingRepository.deleteBooking(parseInt(req.params.bookingId));
 
-        await publishMessage("booking", JSON.stringify({ type: "booking", event: "delete", booking: bookingToDelete }));
+        await publishMessage(
+            "bookingHistory",
+            JSON.stringify(
+                {
+                    type: "bookingHistory",
+                    event: "delete",
+                    body: {bookingId: bookingToDelete.id}
+                }
+            )
+        );
 
         res.status(200).json({ message: "Booking deleted successfully." });
     } catch (error) {
