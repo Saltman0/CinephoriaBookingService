@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS "bookingSeat";
 CREATE TABLE IF NOT EXISTS "bookingSeat"
 (
     "id" SERIAL PRIMARY KEY,
-    "bookingId" INTEGER NOT NULL,
+    "bookingId" INTEGER NOT NULL REFERENCES booking(id) ON DELETE CASCADE,
     "seatId" INTEGER NOT NULL
 );
 -- BookingSeat table
