@@ -4,6 +4,7 @@ import pino from "pino";
 import passport from "./middleware/passport";
 import bookingRoutes from "./routes/booking.routes";
 import paymentRoutes from "./routes/payment.routes";
+import {subscribeToMessages} from "./rabbitmq";
 
 export const port: number = parseInt(process.env.PORT as string) || 3000;
 
@@ -24,3 +25,5 @@ app.use(passport.initialize());
 
 app.use(bookingRoutes);
 app.use(paymentRoutes);
+
+await subscribeToMessages("booking");
