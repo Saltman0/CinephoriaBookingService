@@ -1,10 +1,10 @@
+import {eq} from "drizzle-orm/sql/expressions/conditions";
+import {asc} from "drizzle-orm/sql/expressions/select";
+import {sql} from "drizzle-orm";
+import {database} from "../config/database";
+import {booking} from "../schema/booking";
+import {bookingSeat} from "../schema/bookingSeat";
 import * as bookingFactory from "../factory/booking.factory";
-import { database } from "../config/database";
-import { eq } from "drizzle-orm/sql/expressions/conditions";
-import { booking } from "../schema/booking";
-import { bookingSeat } from "../schema/bookingSeat";
-import { asc } from "drizzle-orm/sql/expressions/select";
-import { sql } from "drizzle-orm";
 
 export async function findBookings(userId: number|null, showtimeId: number|null) {
     try {
@@ -93,6 +93,17 @@ export async function deleteBooking(id: number) {
             .returning({ id: booking.id });
 
         return preparedDeleteBooking[0];
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function deleteBookingByShowtimeId(showtimeId: number) {
+    try {
+        return await database
+            .delete(booking)
+            .where(eq(booking.showtimeId, showtimeId))
+            .returning({id: booking.id});
     } catch (error) {
         throw error;
     }
