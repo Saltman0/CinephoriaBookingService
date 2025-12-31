@@ -108,3 +108,14 @@ export async function deleteBookingByShowtimeId(showtimeId: number) {
         throw error;
     }
 }
+
+export async function deleteBookingByUserId(userId: number) {
+    try {
+        return await database
+            .delete(booking)
+            .where(eq(booking.userId, userId))
+            .returning({id: booking.id});
+    } catch (error) {
+        throw error;
+    }
+}
