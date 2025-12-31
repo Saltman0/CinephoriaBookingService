@@ -8,7 +8,8 @@ eventEmitter.on("messageReceived", async (message: { type: string, event: string
     try {
         const actions: { [key: string]: (message: any) => Promise<void> } = {
             "deleteSeat": seatEvents.deleteSeatEvent,
-            "deleteByShowtimeBooking": bookingEvents.deleteBookingByShowtimeId
+            "deleteByShowtimeBooking": bookingEvents.deleteBookingByShowtimeId,
+            "deleteByUserBooking": bookingEvents.deleteBookingByUserId
         };
 
         const key: string = `${message.event}${message.type.charAt(0).toUpperCase() + message.type.slice(1)}`;
